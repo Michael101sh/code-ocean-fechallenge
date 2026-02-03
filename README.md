@@ -8,9 +8,9 @@ In this challenge you will create a React app with a virtualized infinite scroll
 1. Clone the repo.
 2. Create a React app with a build system of your choice (e.g. RSPack, Vite, Webpack, etc.).
 3. Implement an infinite scroll (data is lazy loaded) virtualized list component that will load data from the server. You can use a library or create your own implementation.
-4. Display a list of **users** using the list component. A user item should include all fields, but `id`.
+4. Display a list of **users** using the list component. A user item should include all fields except for `id`.
 5. Add a **search** input that will filter the list by `name` **or** by `email` using the API.
-6. Add a second list of **reviewers** to the app reusing the code you've created. Both lists should appear side by side, have their own search box, and load data from their respective api endpoints.
+6. Add a second list of **reviewers** to the app reusing the code you've created for users. Both lists should appear side by side, have their own search box, and load data from their respective api endpoints.
 
 ## Finishing the challenge
 1. Don't forget to push your changes to your repo.
