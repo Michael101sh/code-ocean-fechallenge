@@ -8,7 +8,7 @@
     "dev:db": "json-server --watch db/db.json --port 3001",
     "dev": "concurrently \"npm run dev:ui\" \"npm run dev:db\"",
     "start": "npm run dev",
-    "bui  ld": "tsc && vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {

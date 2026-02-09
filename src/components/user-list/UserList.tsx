@@ -1,6 +1,8 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import type { UsersPage } from '../../api/users';
-import { fetchUsersPage, PAGE_SIZE } from '../../api/users';
+import { fetchUsersPage, smartSearch, PAGE_SIZE } from '../../api/users';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import UserListHeader from './UserListHeader';
 import UserListEmptyState from './virtual/UserListEmptyState';
 import UserListErrorState from './virtual/UserListErrorState';
@@ -8,16 +10,21 @@ import VirtualUserList from './virtual/VirtualUserList';
 
 /** Fetches users with infinite pagination and routes to loading/error/empty/list view. */
 function UserList() {
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const isSearching = debouncedSearch.trim().length > 0;
+
+  /** Infinite query for the default (non-search) view. */
   const {
     data,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    isRefetching,
+    isLoading: isLoadingAll,
+    isError: isErrorAll,
+    error: errorAll,
+    refetch: refetchAll,
+    isRefetching: isRefetchingAll,
   } = useInfiniteQuery({
     queryKey: ['users'],
     queryFn: fetchUsersPage,
@@ -46,15 +53,45 @@ function UserList() {
 
       return typedPages.length;
     },
+    enabled: !isSearching,
   });
 
-  const allUsers = data?.pages?.flatMap((page: UsersPage) => page.users) ?? [];
+  /** Search query – fires only when the debounced term is non-empty. */
+  const {
+    data: searchResults,
+    isLoading: isLoadingSearch,
+    isError: isErrorSearch,
+    error: errorSearch,
+    refetch: refetchSearch,
+    isRefetching: isRefetchingSearch,
+  } = useQuery({
+    queryKey: ['users', 'search', debouncedSearch],
+    queryFn: () => smartSearch(debouncedSearch),
+    enabled: isSearching,
+  });
+
+  /** Resolve the active dataset based on whether we're searching. */
+  const allUsers = isSearching
+    ? searchResults ?? []
+    : data?.pages?.flatMap((page: UsersPage) => page.users) ?? [];
+
+  const isLoading = isSearching ? isLoadingSearch : isLoadingAll;
+  const isError = isSearching ? isErrorSearch : isErrorAll;
+  const error = isSearching ? errorSearch : errorAll;
+  const isRefetching = isSearching ? isRefetchingSearch : isRefetchingAll;
+  const refetch = isSearching ? refetchSearch : refetchAll;
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8 flex flex-col">
         <div className="max-w-6xl mx-auto w-full flex flex-col flex-1">
-          <UserListHeader total={0} isRefetching={false} onRefetch={() => {}} />
+          <UserListHeader
+            total={0}
+            searchValue={search}
+            onSearchChange={setSearch}
+            isRefetching={false}
+            onRefetch={() => {}}
+          />
 
           <div className="flex-1 flex items-center justify-center">
             <div className="text-white text-2xl font-semibold flex items-center gap-4">
@@ -73,6 +110,24 @@ function UserList() {
   }
 
   if (!allUsers || allUsers.length === 0) {
+    if (isSearching) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <UserListHeader
+              total={0}
+              searchValue={search}
+              onSearchChange={setSearch}
+              isRefetching={isRefetching}
+              onRefetch={refetch}
+            />
+            <div className="text-center text-white/80 text-xl font-medium mt-16">
+              No users found matching "{debouncedSearch}"
+            </div>
+          </div>
+        </div>
+      );
+    }
     return <UserListEmptyState />;
   }
 
@@ -81,15 +136,17 @@ function UserList() {
       <div className="max-w-6xl mx-auto">
         <UserListHeader
           total={allUsers.length}
+          searchValue={search}
+          onSearchChange={setSearch}
           isRefetching={isRefetching}
           onRefetch={refetch}
         />
 
         <VirtualUserList
           users={allUsers}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          onLoadMore={fetchNextPage}
+          hasNextPage={isSearching ? false : hasNextPage}
+          isFetchingNextPage={isSearching ? false : isFetchingNextPage}
+          onLoadMore={isSearching ? () => {} : fetchNextPage}
         />
       </div>
     </div>

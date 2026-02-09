@@ -1,6 +1,10 @@
 import type { RefObject } from 'react';
 import { useEffect, useRef } from 'react';
-import { useVirtualizer, type VirtualItem, type Virtualizer } from '@tanstack/react-virtual';
+import {
+  useVirtualizer,
+  type VirtualItem,
+  type Virtualizer,
+} from '@tanstack/react-virtual';
 
 /**
  * Virtualized list + infinite scroll: only visible rows are rendered,
@@ -66,4 +70,3 @@ export function useInfiniteVirtualList<TItem>(
     virtualItems,
   };
 }
-
