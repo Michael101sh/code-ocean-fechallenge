@@ -1,11 +1,31 @@
 {
-  "name": "fechallenge",
-  "version": "0.1.0",
+  "name": "code-ocean-fechallenge",
   "private": true,
+  "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "start": "json-server --watch db/db.json --port 3001"
+    "dev:ui": "vite",
+    "dev:db": "json-server --watch db/db.json --port 3001",
+    "dev": "concurrently \"npm run dev:ui\" \"npm run dev:db\"",
+    "start": "npm run dev",
+    "bui  ld": "tsc && vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "json-server": "1.0.0-beta.3"
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.3",
+    "concurrently": "^9.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "json-server": "^1.0.0-beta.3",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.1.18"
   }
 }
