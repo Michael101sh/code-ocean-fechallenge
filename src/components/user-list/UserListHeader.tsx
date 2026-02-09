@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import RefreshButton from './RefreshButton';
+import RefreshButton from '../common/RefreshButton';
 
 /** User Directory title, total count, and refresh action. */
 type UserListHeaderProps = {

@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import type { UsersPage } from '../../api/users';
 import { fetchUsersPage, PAGE_SIZE } from '../../api/users';
-import UserListHeader from './UserListHeader.tsx';
+import UserListHeader from './UserListHeader';
 import UserListEmptyState from './virtual/UserListEmptyState';
 import UserListErrorState from './virtual/UserListErrorState';
 import VirtualUserList from './virtual/VirtualUserList';
@@ -48,18 +48,13 @@ function UserList() {
     },
   });
 
-  const allUsers =
-    data?.pages?.flatMap((page: UsersPage) => page.users) ?? [];
+  const allUsers = data?.pages?.flatMap((page: UsersPage) => page.users) ?? [];
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8 flex flex-col">
         <div className="max-w-6xl mx-auto w-full flex flex-col flex-1">
-          <UserListHeader
-            total={0}
-            isRefetching={false}
-            onRefetch={() => {}}
-          />
+          <UserListHeader total={0} isRefetching={false} onRefetch={() => {}} />
 
           <div className="flex-1 flex items-center justify-center">
             <div className="text-white text-2xl font-semibold flex items-center gap-4">

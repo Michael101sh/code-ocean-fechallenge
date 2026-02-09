@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-/** Refetch trigger; shows spinner and "Refreshing…" while loading. */
+/** Reusable refetch trigger; shows spinner and "Refreshing…" while loading. Use with any list or data view. */
 type RefreshButtonProps = {
   isRefetching: boolean;
   onRefetch: () => void;
@@ -9,8 +9,11 @@ type RefreshButtonProps = {
 const RefreshButton: FC<RefreshButtonProps> = ({ isRefetching, onRefetch }) => {
   return (
     <button
+      type="button"
       onClick={onRefetch}
       disabled={isRefetching}
+      aria-busy={isRefetching}
+      aria-label={isRefetching ? 'Refreshing' : 'Refresh list'}
       className={`
         min-w-[11rem] px-6 py-3 rounded-xl font-bold text-lg
         transition-[background-color,transform,box-shadow] duration-200 ease-out
