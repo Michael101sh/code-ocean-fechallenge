@@ -15,9 +15,9 @@ const RefreshButton: FC<RefreshButtonProps> = ({ isRefetching, onRefetch }) => {
       aria-busy={isRefetching}
       aria-label={isRefetching ? 'Refreshing' : 'Refresh list'}
       className={`
-        min-w-[11rem] px-6 py-3 rounded-xl font-bold text-lg
+        px-4 py-2 rounded-xl font-bold text-base
         transition-[background-color,transform,box-shadow] duration-200 ease-out
-        shadow-lg hover:shadow-xl
+        shadow-lg hover:shadow-xl flex-shrink-0
         ${
           isRefetching
             ? 'bg-white/90 text-purple-600 cursor-wait'

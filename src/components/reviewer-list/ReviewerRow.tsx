@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import type { Reviewer } from '../../api/reviewers';
 import { getAvatarColor, getInitials } from '../../utils/avatar';
 
+/** Single reviewer card: avatar, name, email, catch phrase, and optional comments. */
 type ReviewerRowProps = {
   reviewer: Reviewer;
   index: number;

@@ -31,6 +31,7 @@ function VirtualList<T>({
   });
 
   return (
+    /* flex-1 fills remaining panel height; min-h-0 allows shrinking so overflow-auto works. */
     <div
       ref={parentRef}
       role="list"
@@ -40,6 +41,7 @@ function VirtualList<T>({
         scrollbarColor: 'rgba(255,255,255,0.5) transparent',
       }}
     >
+      {/* Inner div is sized to the total virtual height so the scrollbar reflects all content. */}
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,
@@ -48,6 +50,7 @@ function VirtualList<T>({
         }}
       >
         {virtualItems.map((virtualItem) => {
+          /* +1 phantom row at the end acts as the "loading more" indicator. */
           const isLoaderRow = virtualItem.index > items.length - 1;
           const item = items[virtualItem.index];
 

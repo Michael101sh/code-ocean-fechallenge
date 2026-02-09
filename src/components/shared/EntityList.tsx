@@ -55,8 +55,10 @@ function EntityList<T>({
     />
   );
 
+  /* Early-return states: loading → error → empty. Each keeps the header visible for search. */
   if (isLoading) {
     return (
+      /* min-h-0 prevents flex children from expanding beyond the grid cell height. */
       <div className="flex flex-col h-full min-h-0">
         <ListHeader
           title={title}

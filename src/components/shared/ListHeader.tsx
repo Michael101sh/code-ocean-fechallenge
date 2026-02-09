@@ -27,6 +27,7 @@ const ListHeader: FC<ListHeaderProps> = ({
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) =>
     onSearchChange?.(e.target.value);
 
+  /* Search input is opt-in: only rendered when a change handler is provided. */
   const showSearch = onSearchChange != null;
 
   return (

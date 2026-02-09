@@ -48,6 +48,7 @@ export function useEntityList<T>(
 ): EntityListResult<T> {
   const { queryKey, fetchPage, searchFn, pageSize, debounceMs = 300 } = config;
 
+  /* Raw input is kept instant for a responsive UI; debounced value drives the API call. */
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, debounceMs);
   const isSearching = debouncedSearch.trim().length > 0;
@@ -71,6 +72,7 @@ export function useEntityList<T>(
       const typedLast = lastPage as EntityPage<T>;
       const typedAll = allPages as EntityPage<T>[];
 
+      /* Prefer X-Total-Count when available; fall back to under-full page detection. */
       if (typeof typedLast.total === 'number') {
         const loaded = typedAll.reduce((s, p) => s + p.items.length, 0);
         if (loaded >= typedLast.total) return undefined;
@@ -80,6 +82,7 @@ export function useEntityList<T>(
       if (typedLast.items.length < pageSize) return undefined;
       return typedAll.length;
     },
+    /* Pause pagination while a search is active – the two queries are mutually exclusive. */
     enabled: !isSearching,
   });
 
@@ -97,11 +100,12 @@ export function useEntityList<T>(
     enabled: isSearching,
   });
 
-  /* ---- resolve active dataset ---- */
+  /* Merge paginated pages into a flat array, or use the search result directly. */
   const items = isSearching
     ? (searchResults ?? [])
     : (data?.pages?.flatMap((p: EntityPage<T>) => p.items) ?? []);
 
+  /* Expose a single, mode-aware interface so consumers don't need to know which query is active. */
   return {
     items,
     search,
@@ -113,6 +117,7 @@ export function useEntityList<T>(
     error: (isSearching ? errorSearch : errorAll) as Error | null,
     isRefetching: isSearching ? isRefetchingSearch : isRefetchingAll,
     refetch: isSearching ? refetchSearch : refetchAll,
+    /* Search returns all matches at once, so pagination is disabled. */
     hasNextPage: isSearching ? false : hasNextPageAll,
     isFetchingNextPage: isSearching ? false : isFetchingNextPageAll,
     loadMore: isSearching ? () => {} : fetchNextPage,

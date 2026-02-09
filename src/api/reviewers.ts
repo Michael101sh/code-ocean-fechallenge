@@ -9,8 +9,10 @@ export type Reviewer = {
   comments: string;
 };
 
+/** Must match the _limit sent to json-server so getNextPageParam can detect the last page. */
 export const PAGE_SIZE = 20;
 
+/** Vite proxy rewrites /api/* to the json-server at localhost:3001. */
 const REVIEWERS_BASE = '/api/reviewers';
 
 /**
@@ -23,6 +25,7 @@ export async function smartSearchReviewers(term: string): Promise<Reviewer[]> {
   if (!trimmed) return [];
 
   try {
+    /* Simple check – if it looks like an email, search the email field only. */
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (emailRegex.test(trimmed)) {
@@ -43,6 +46,7 @@ export async function smartSearchReviewers(term: string): Promise<Reviewer[]> {
 
     const firstNames = (await resFirst.json()) as Reviewer[];
     const lastNames = (await resLast.json()) as Reviewer[];
+    /* Merge both results and dedupe by id (a reviewer could match both first and last name). */
     const combined = [...firstNames, ...lastNames];
     return Array.from(new Map(combined.map((r) => [r.id, r])).values());
   } catch (err) {
@@ -68,6 +72,7 @@ export const fetchReviewersPage = async ({
       throw new Error(`Failed to fetch reviewers: ${res.statusText}`);
 
     const items = (await res.json()) as Reviewer[];
+    /** json-server returns X-Total-Count when _limit is used; drives pagination end detection. */
     const totalHeader = res.headers.get('X-Total-Count');
     const total = totalHeader ? Number(totalHeader) : undefined;
 
