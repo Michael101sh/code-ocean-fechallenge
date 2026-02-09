@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useDebouncedValue } from './useDebouncedValue';
+import { useLocalStorageState } from './useLocalStorageState';
 
 /** Generic page shape returned by any paginated entity endpoint. */
 export type EntityPage<T> = {
@@ -48,8 +48,8 @@ export function useEntityList<T>(
 ): EntityListResult<T> {
   const { queryKey, fetchPage, searchFn, pageSize, debounceMs = 300 } = config;
 
-  /* Raw input is kept instant for a responsive UI; debounced value drives the API call. */
-  const [search, setSearch] = useState('');
+  /* Persisted to localStorage so the filter survives page refreshes; keyed per entity. */
+  const [search, setSearch] = useLocalStorageState(`entityList:${queryKey}:search`, '');
   const debouncedSearch = useDebouncedValue(search, debounceMs);
   const isSearching = debouncedSearch.trim().length > 0;
 
