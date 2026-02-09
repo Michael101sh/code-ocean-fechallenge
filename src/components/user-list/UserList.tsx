@@ -72,8 +72,8 @@ function UserList() {
 
   /** Resolve the active dataset based on whether we're searching. */
   const allUsers = isSearching
-    ? searchResults ?? []
-    : data?.pages?.flatMap((page: UsersPage) => page.users) ?? [];
+    ? (searchResults ?? [])
+    : (data?.pages?.flatMap((page: UsersPage) => page.users) ?? []);
 
   const isLoading = isSearching ? isLoadingSearch : isLoadingAll;
   const isError = isSearching ? isErrorSearch : isErrorAll;
@@ -83,7 +83,7 @@ function UserList() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-6 px-4 sm:px-6 lg:px-8 flex flex-col">
         <div className="max-w-6xl mx-auto w-full flex flex-col flex-1">
           <UserListHeader
             total={0}
@@ -112,7 +112,7 @@ function UserList() {
   if (!allUsers || allUsers.length === 0) {
     if (isSearching) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <UserListHeader
               total={0}
@@ -132,7 +132,7 @@ function UserList() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-6 x-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <UserListHeader
           total={allUsers.length}
