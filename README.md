@@ -1,4 +1,4 @@
-# Code Ocean Frontend Challenge - Virtualized Infinite List
+# Virtualized Infinite Scroll List
 
 A high-performance React application featuring virtualized infinite scroll lists with real-time search functionality for users and reviewers.
 
