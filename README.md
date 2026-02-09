@@ -1,4 +1,4 @@
-# Code Ocean Frontend Challenge - Virtualized Infinite Scroll
+# Code Ocean Frontend Challenge - Virtualized Infinite List
 
 A high-performance React application featuring virtualized infinite scroll lists with real-time search functionality for users and reviewers.
 
@@ -87,8 +87,6 @@ The mock API runs on `http://localhost:3001` and provides:
 
 - **Reviewers**: `GET /reviewers`
   - Same query parameters as users endpoint
-
-**Note**: The API requires exact matches for search queries. Partial matching is handled client-side.
 
 ## 🎯 Key Implementation Details
 
