@@ -1,38 +1,40 @@
-import type { FC } from 'react';
-import type { User } from '../../../api/users';
-import UserRow from '../UserRow.tsx';
-import { useInfiniteVirtualList } from '../../../hooks/useInfiniteVirtualList';
+import type { ReactNode } from 'react';
+import { useInfiniteVirtualList } from '../../hooks/useInfiniteVirtualList';
 
-/** Renders users in a virtualized scroll list with a loader row at the end when hasNextPage. */
-type VirtualUserListProps = {
-  users: User[];
+/** Generic virtualized + infinite-scroll list. Delegates row rendering via renderRow. */
+type VirtualListProps<T> = {
+  items: T[];
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
+  renderRow: (item: T, index: number) => ReactNode;
+  estimateSize?: () => number;
+  overscan?: number;
 };
 
-const VirtualUserList: FC<VirtualUserListProps> = ({
-  users,
+function VirtualList<T>({
+  items,
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
-}) => {
-  const { parentRef, virtualizer, virtualItems } = useInfiniteVirtualList<User>(
-    {
-      items: users,
-      hasNextPage,
-      isFetchingNextPage,
-      onLoadMore,
-      estimateSize: () => 220,
-      overscan: 5,
-    },
-  );
+  renderRow,
+  estimateSize = () => 220,
+  overscan = 5,
+}: VirtualListProps<T>) {
+  const { parentRef, virtualizer, virtualItems } = useInfiniteVirtualList<T>({
+    items,
+    hasNextPage,
+    isFetchingNextPage,
+    onLoadMore,
+    estimateSize,
+    overscan,
+  });
 
   return (
     <div
       ref={parentRef}
       role="list"
-      className="h-[calc(100vh-250px)] overflow-auto rounded-2xl bg-white/10 backdrop-blur-sm p-4"
+      className="flex-1 min-h-0 overflow-auto rounded-2xl bg-white/10 backdrop-blur-sm p-3"
       style={{
         scrollbarWidth: 'thin',
         scrollbarColor: 'rgba(255,255,255,0.5) transparent',
@@ -46,9 +48,8 @@ const VirtualUserList: FC<VirtualUserListProps> = ({
         }}
       >
         {virtualItems.map((virtualItem) => {
-          /** Last virtual row is the loader when we have more pages. */
-          const isLoaderRow = virtualItem.index > users.length - 1;
-          const user = users[virtualItem.index];
+          const isLoaderRow = virtualItem.index > items.length - 1;
+          const item = items[virtualItem.index];
 
           return (
             <div
@@ -70,16 +71,16 @@ const VirtualUserList: FC<VirtualUserListProps> = ({
                   {hasNextPage ? (
                     <div className="text-white font-semibold flex items-center justify-center gap-3">
                       <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                      Loading more users...
+                      Loading more&hellip;
                     </div>
                   ) : (
                     <div className="text-white/70 font-medium">
-                      🎉 That's everyone!
+                      That&rsquo;s everyone!
                     </div>
                   )}
                 </div>
               ) : (
-                <UserRow user={user} index={virtualItem.index} />
+                renderRow(item, virtualItem.index)
               )}
             </div>
           );
@@ -87,7 +88,6 @@ const VirtualUserList: FC<VirtualUserListProps> = ({
       </div>
     </div>
   );
-};
+}
 
-export default VirtualUserList;
-
+export default VirtualList;

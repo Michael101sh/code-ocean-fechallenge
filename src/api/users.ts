@@ -1,3 +1,5 @@
+import type { EntityPage } from '../hooks/useEntityList';
+
 export type User = {
   id: string;
   firstName: string;
@@ -5,15 +7,6 @@ export type User = {
   email: string;
   catchPhrase: string;
   comments: string;
-};
-
-export type UsersPage = {
-  users: User[];
-  /**
-   * Optional total count of users, when provided by the API
-   * via the `X-Total-Count` header.
-   */
-  total?: number;
 };
 
 export const PAGE_SIZE = 20;
@@ -58,22 +51,19 @@ export async function smartSearch(term: string): Promise<User[]> {
     const firstNames = (await resFirst.json()) as User[];
     const lastNames = (await resLast.json()) as User[];
     const combined = [...firstNames, ...lastNames];
-    const uniqueUsers = Array.from(
-      new Map(combined.map((u) => [u.id, u])).values(),
-    );
-    return uniqueUsers;
+    return Array.from(new Map(combined.map((u) => [u.id, u])).values());
   } catch (err) {
     if (err instanceof Error) throw err;
     throw new Error('Failed to load users');
   }
 }
 
-/** Fetches one page of users. Uses _page (1-based), _limit. No search (use smartSearch for search). */
+/** Fetches one page of users. Uses _page (1-based), _limit. */
 export const fetchUsersPage = async ({
   pageParam = 0,
 }: {
   pageParam?: number;
-}): Promise<UsersPage> => {
+}): Promise<EntityPage<User>> => {
   try {
     const params = new URLSearchParams({
       _page: String(pageParam + 1),
@@ -85,12 +75,11 @@ export const fetchUsersPage = async ({
       throw new Error(`Failed to fetch users: ${res.statusText}`);
     }
 
-    const users = (await res.json()) as User[];
-    /** json-server sends total count with _limit; used to know when to stop pagination. */
+    const items = (await res.json()) as User[];
     const totalHeader = res.headers.get('X-Total-Count');
     const total = totalHeader ? Number(totalHeader) : undefined;
 
-    return { users, total };
+    return { items, total };
   } catch (err) {
     if (err instanceof Error) throw err;
     throw new Error('Failed to load users');
