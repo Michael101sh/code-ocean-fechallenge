@@ -36,7 +36,7 @@ A high-performance React application featuring virtualized infinite scroll lists
 
 ```bash
 git clone <your-repo-url>
-cd code-ocean-fechallenge
+cd virtualized-infinite-list
 ```
 
 2. Install dependencies:
@@ -132,7 +132,3 @@ The mock API runs on `http://localhost:3001` and provides:
 - ✅ Handles 10,000+ items with smooth scrolling
 - ✅ <16ms render time per frame (60 FPS)
 - ✅ Minimal memory footprint regardless of dataset size
-
----
-
-Built with ❤️ for the Code Ocean Frontend Challenge
